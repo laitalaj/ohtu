@@ -66,7 +66,7 @@ public class VarastoTest {
 
     @Test
     public void lisaysLisaaSaldoa() {
-        varasto.lisaaVarastoon(3);
+        varasto.lisaaVarastoon(8);
 
         // saldon pitäisi olla sama kun lisätty määrä
         assertEquals(8, varasto.getSaldo(), vertailuTarkkuus);
