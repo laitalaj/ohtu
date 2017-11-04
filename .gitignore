@@ -3,3 +3,5 @@
 #gradle stuff
 /build/
 .gradle
+#idea stuff
+.idea
