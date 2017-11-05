@@ -1,7 +1,7 @@
 #tmp files in root
 /*.tmp
 #gradle stuff
-/build/
+build/
 .gradle
 #idea stuff
 .idea
