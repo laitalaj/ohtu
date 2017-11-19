@@ -13,19 +13,24 @@ public class Main {
             studentNr = args[0];
         }
 
-        String url = "https://studies.cs.helsinki.fi/ohtustats/students/"+studentNr+"/submissions";
+        String submissions_url = "https://studies.cs.helsinki.fi/ohtustats/students/"+studentNr+"/submissions";
+        String courses_url = "https://studies.cs.helsinki.fi/ohtustats/courseinfo";
 
-        String bodyText = Request.Get(url).execute().returnContent().asString();
+        String subsBodyText = Request.Get(submissions_url).execute().returnContent().asString();
+        String coursesBodyText = Request.Get(courses_url).execute().returnContent().asString();
+
 
 //        System.out.println("json-muotoinen data:");
-//        System.out.println( bodyText );
+//        System.out.println( coursesBodyText );
 
         Gson mapper = new Gson();
-        Submission[] subs = mapper.fromJson(bodyText, Submission[].class);
+        Course course = mapper.fromJson(coursesBodyText, Course.class);
+        Submission[] subs = mapper.fromJson(subsBodyText, Submission[].class);
 
         System.out.println("opiskelijanumero: " + studentNr);
         int hours = 0, tasks = 0;
         for (Submission submission : subs) {
+            submission.setCourse(course);
             System.out.println(submission);
             hours += submission.getHours();
             tasks += submission.getExerciseCount();
