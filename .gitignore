@@ -5,3 +5,5 @@ build/
 .gradle
 #idea stuff
 .idea
+#out folder (idea)
+out/
