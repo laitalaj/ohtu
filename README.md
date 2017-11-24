@@ -5,4 +5,4 @@
 Repo for Helsinki University course on software production.
 Nothing too interesting here.
 
-These are some changes.
+These are some changes. Don't mind these.
