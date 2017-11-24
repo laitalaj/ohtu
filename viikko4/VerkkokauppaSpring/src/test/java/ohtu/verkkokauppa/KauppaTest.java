@@ -9,19 +9,21 @@ public class KauppaTest {
     private Viitegeneraattori viite;
     private Varasto varasto;
     private Kauppa k;
+    private Tuote kalja;
 
     @Before
     public void setUp() {
         pankki = mock(Pankki.class);
 
         viite = mock(Viitegeneraattori.class);
-        when(viite.uusi()).thenReturn(42);
+        when(viite.uusi()).thenReturn(42).thenReturn(43);
 
+        kalja = new Tuote(5, "olut", 1);
         varasto = mock(Varasto.class);
         when(varasto.saldo(1)).thenReturn(10);
         when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));
         when(varasto.saldo(5)).thenReturn(9001);
-        when(varasto.haeTuote(5)).thenReturn(new Tuote(5, "olut", 1));
+        when(varasto.haeTuote(5)).thenReturn(kalja);
         when(varasto.saldo(7)).thenReturn(1);
         when(varasto.haeTuote(7)).thenReturn(new Tuote(7, "porakone", 79));
         when(varasto.saldo(12)).thenReturn(0);
@@ -69,6 +71,45 @@ public class KauppaTest {
         k.tilimaksu("taneli", "viikon_lopu_r14nt0_t1l1");
 
         verify(pankki).tilisiirto("taneli", 42, "viikon_lopu_r14nt0_t1l1", "33333-44455", 1);
+    }
+
+    @Test
+    public void aloitaAsiointiNollaaEdellisen() {
+        k.aloitaAsiointi();
+        k.lisaaKoriin(5);
+
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);
+        k.tilimaksu("raimo", "ryä raha tili-39-45-95-11");
+        verify(pankki).tilisiirto("raimo", 42, "ryä raha tili-39-45-95-11", "33333-44455", 5);
+    }
+
+    @Test
+    public void uusiViitenumeroJokaiselleMaksutapahtumalle() {
+        k.aloitaAsiointi();
+        k.lisaaKoriin(5);
+        k.tilimaksu("taneli", "viikon_lopu_r14nt0_t1l1");
+        verify(pankki).tilisiirto("taneli", 42, "viikon_lopu_r14nt0_t1l1", "33333-44455", 1);
+
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);
+        k.tilimaksu("raimo", "ryä raha tili-39-45-95-11");
+        verify(pankki).tilisiirto("raimo", 43, "ryä raha tili-39-45-95-11", "33333-44455", 5);
+    }
+
+    @Test
+    public void tuotePoistuuKoristaJaPalaaVarastoon() {
+        when(viite.uusi()).thenReturn(66);
+
+        k.aloitaAsiointi();
+        k.lisaaKoriin(5);
+        k.lisaaKoriin(7);
+
+        k.poistaKorista(5);
+        verify(varasto).palautaVarastoon(kalja);
+
+        k.tilimaksu("raimo", "ryä raha tili-39-45-95-11");
+        verify(pankki).tilisiirto("raimo", 66, "ryä raha tili-39-45-95-11", "33333-44455", 79);
     }
 
 }
